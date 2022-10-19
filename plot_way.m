@@ -34,6 +34,7 @@ show_map(hax, bounds, map_img_filename)
 %plot(node.xy(1,:), node.xy(2,:), '.')
 
 key_catalog = {};
+golf_key_values = {};
 for i=1:size(way.id, 2)
     [key, val] = get_way_tag_key(way.tag{1,i} );
     
@@ -49,15 +50,21 @@ for i=1:size(way.id, 2)
     switch key
         case 'highway'
             flag = 1;
-            
+
             % bus stop ?
             if strcmp(val, 'bus_stop')
                 disp('Bus stop found')
             end
         case 'amenity'
+            flag = 2;
             % bus station ?
             if strcmp(val, 'bus_station')
                 disp('Bus station found')
+            end
+        case 'golf'
+            flag = 3;
+            if isempty( find(ismember(golf_key_values, val) == 1, 1) )
+                golf_key_values(1, end+1) = {val};
             end
         otherwise
             %disp('way without tag.')
@@ -79,9 +86,21 @@ for i=1:size(way.id, 2)
     nd_coor(any(nd_coor==0,2),:)=[];
     
     if ~isempty(nd_coor)
-        % plot way (highway = blue, other = green)
+        % plot way (highway = blue, golf = magenta, amenity = null, other = green)
         if flag == 1
             plot(hax, nd_coor(1,:), nd_coor(2,:), 'b-')
+        elseif flag == 2
+            %plot(hax, nd_coor(1,:), nd_coor(2,:), 'r-')
+        elseif flag == 3
+            if strcmp(val, 'fairway')
+                plot(hax, nd_coor(1,:), nd_coor(2,:), '-', 'color', '#77AC30')
+            elseif strcmp(val, 'bunker')
+                plot(hax, nd_coor(1,:), nd_coor(2,:), '-', 'color', '#EDB120')
+            elseif strcmp(val, 'cartpath')
+                plot(hax, nd_coor(1,:), nd_coor(2,:), 'k-')
+            else
+                plot(hax, nd_coor(1,:), nd_coor(2,:), 'm-')
+            end
         else
             plot(hax, nd_coor(1,:), nd_coor(2,:), 'g--')
         end
@@ -90,6 +109,7 @@ for i=1:size(way.id, 2)
     %waitforbuttonpress
 end
 disp(key_catalog.')
+disp(golf_key_values.')
 
 function [] = disp_info(bounds, Nnode, Nway)
 disp( ['Bounds: xmin = ' num2str(bounds(1,1)),...
