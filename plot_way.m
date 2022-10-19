@@ -86,18 +86,20 @@ for i=1:size(way.id, 2)
     nd_coor(any(nd_coor==0,2),:)=[];
     
     if ~isempty(nd_coor)
-        % plot way (highway = blue, golf = magenta, amenity = null, other = green)
+        % plot golf ways
         if flag == 1
-            plot(hax, nd_coor(1,:), nd_coor(2,:), 'b-')
+            %plot(hax, nd_coor(1,:), nd_coor(2,:), 'b-')
         elseif flag == 2
             %plot(hax, nd_coor(1,:), nd_coor(2,:), 'r-')
         elseif flag == 3
-            if strcmp(val, 'fairway')
+            if strcmp(val, 'fairway') || strcmp(val, 'green')
                 plot(hax, nd_coor(1,:), nd_coor(2,:), '-', 'color', '#77AC30')
             elseif strcmp(val, 'bunker')
                 plot(hax, nd_coor(1,:), nd_coor(2,:), '-', 'color', '#EDB120')
             elseif strcmp(val, 'cartpath')
                 plot(hax, nd_coor(1,:), nd_coor(2,:), 'k-')
+            elseif strcmp(val, 'water_hazard')
+                plot(hax, nd_coor(1,:), nd_coor(2,:), 'b-')
             else
                 plot(hax, nd_coor(1,:), nd_coor(2,:), 'm-')
             end
