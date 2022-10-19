@@ -60,7 +60,7 @@ for i=1:size(way.id, 2)
                 disp('Bus station found')
             end
         otherwise
-            disp('way without tag.')
+            %disp('way without tag.')
     end
     
     % plot highway

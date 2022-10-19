@@ -29,6 +29,8 @@ node_xys = nodes.xy;
 
 % which nodes to plot ?
 n = size(node_xys, 2);
+disp('Node N:')
+disp(n)
 if nargin < 3
     only_node_indices = 1:n;
 end
@@ -49,10 +51,12 @@ plotmd(ax, xy, 'yo')
 % label plots
 for i=only_node_indices
     node_id_txt = num2str(node_ids(1, i) );
-    if show_id
+    if show_id && mod(i, 25) == 0
         curtxt = {['index=', num2str(i) ], ['id=', node_id_txt] }.';
+        %curtxt = ['index=', num2str(i)];
     else
-        curtxt = ['index=', num2str(i) ];
+        %curtxt = ['index=', num2str(i) ];
+        curtxt = ' ';
     end
     textmd(node_xys(:, i), curtxt, 'Parent', ax)
 end

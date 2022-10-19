@@ -24,4 +24,4 @@ if ~strfind(filename, '.osm')
     warning('Filename does not have the extension .osm')
 end
 
-map_osm = xml2struct_fex28518(filename); % downloaded osm file
+map_osm = xml2struct(filename); % downloaded osm file

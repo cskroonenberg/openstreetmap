@@ -13,7 +13,7 @@ elseif iscell(tag) == 1
     val = tag{1}.Attributes.v;
 else
     if isempty(tag)
-        warning('Way has NO tag.')
+        %warning('Way has NO tag.')
     else
         warning('Way has tag which is not a structure nor cell array, but:')
         disp(tag)
