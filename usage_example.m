@@ -18,6 +18,7 @@
 % 2010.11.25 (c) Ioannis Filippidis, jfilippidis@gmail.com
 
 %% name file
+% change
 openstreetmap_filename = 'lcc.osm';
 %map_img_filename = 'map.png'; % image file saved from online, if available
 
