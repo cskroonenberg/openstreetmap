@@ -122,8 +122,9 @@ nnzcmns = any(connectivity_matrix, 1);
 nnznds = nnzrows.' | nnzcmns;
 intersection_node_indices = find(nnznds == 1);
 
-figure;
-    spy(connectivity_matrix)
+% Plot connectivity matrix
+%figure;
+%    spy(connectivity_matrix)
 
 %% report
 disp( ['Found ' num2str(Nsamends) ' common nodes.'] )
