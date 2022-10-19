@@ -48,6 +48,6 @@ for curnode=1:n
     end
 end
 
-%plot_nodes(ax, parsed_osm, nodelist)
+plot_nodes(ax, parsed_osm, nodelist)
 
-givehold(ax, held)
+%givehold(ax, held)
