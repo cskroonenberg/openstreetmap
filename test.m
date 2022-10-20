@@ -1,13 +1,5 @@
-C = {1, 2, 3};
+openstreetmap_filename = 'lcc.osm';
 
-if find([[C{:}] == 1])
-    disp('success');
-else
-    disp('failure');
-end
+[parsed_osm, osm_xml] = parse_openstreetmap(openstreetmap_filename);
 
-if find([[C{:}] == 4])
-    disp('success');
-else
-    disp('failure');
-end
+adjacency_list = extract_adjacency_list(parsed_osm)
