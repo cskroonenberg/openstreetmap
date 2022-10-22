@@ -31,8 +31,10 @@ show_ways(ax, bounds, node, way, map_img_filename);
 function [] = show_ways(hax, bounds, node, way, map_img_filename)
 show_map(hax, bounds, map_img_filename)
 
-%plot(node.xy(1,:), node.xy(2,:), '.')
+node_xys = node.xy;
 
+%plot(node.xy(1,:), node.xy(2,:), '.')
+nodes_to_plot = []; % Array of node indices to plot
 key_catalog = {};
 golf_key_values = {};
 for i=1:size(way.id, 2)
@@ -66,6 +68,8 @@ for i=1:size(way.id, 2)
             if isempty( find(ismember(golf_key_values, val) == 1, 1) )
                 golf_key_values(1, end+1) = {val};
             end
+        case 'bridge'
+            flag = 4;
         otherwise
             %disp('way without tag.')
     end
@@ -75,6 +79,36 @@ for i=1:size(way.id, 2)
     num_nd = size(way_nd_ids, 2);
     nd_coor = zeros(2, num_nd);
     nd_ids = node.id;
+    if (strcmp(key, 'golf') && strcmp(val, 'cartpath')) || strcmp(key, 'bridge')
+        % Plot and label first and last nodes in a way
+        idx_1 = find(nd_ids(1, :) == way_nd_ids(1, 1));
+        idx_n = find(nd_ids(1, :) == way_nd_ids(1, num_nd));
+
+        node_id_txt = num2str(nd_ids(1, idx_1) );
+        curtxt = {['way=', num2str(way.id(i)) ], ['idx_1=', num2str(idx_1)], }.';
+        textmd(node_xys(:, idx_1), curtxt, 'Parent', hax)
+
+        node_id_txt = num2str(nd_ids(1, idx_n) );
+        curtxt = {['way=', num2str(way.id(i)) ], ['idx_n=', num2str(idx_n)], }.';
+        textmd(node_xys(:, idx_n), curtxt, 'Parent', hax)
+
+        nodes_to_plot = [nodes_to_plot, idx_1, idx_n];
+
+        % Plot all other nodes (no label)
+        for j=2:(num_nd-1)
+            idx_j = find(nd_ids(1, :) == way_nd_ids(1, j));
+            nodes_to_plot = [nodes_to_plot, idx_j];
+            if way.id(i) == 867486969
+                node_id_txt = num2str(nd_ids(1, idx_j) );
+                curtxt = {['way=', num2str(way.id(i)) ], ['idx_', num2str(j), '=', num2str(idx_j)], }.';
+                textmd(node_xys(:, idx_j), curtxt, 'Parent', hax)
+            end
+        end
+
+        disp(['way ID = ', num2str(way.id(i))]);
+        disp(['add node ', num2str(way_nd_ids(1, 1)), 'idx: ',  num2str(idx_1), ' to plot']);
+        disp(['add node ', num2str(way_nd_ids(1, num_nd)), 'idx: ',  num2str(idx_n), ' to plot']);
+    end
     for j=1:num_nd
         cur_nd_id = way_nd_ids(1, j);
         if ~isempty(node.xy(:, cur_nd_id == nd_ids))
@@ -103,6 +137,8 @@ for i=1:size(way.id, 2)
             else
                 plot(hax, nd_coor(1,:), nd_coor(2,:), 'm-')
             end
+        elseif flag == 4
+            plot(hax, nd_coor(1,:), nd_coor(2,:), '-', 'color', '#FF0000')
         else
             plot(hax, nd_coor(1,:), nd_coor(2,:), 'g--')
         end
@@ -110,6 +146,10 @@ for i=1:size(way.id, 2)
     
     %waitforbuttonpress
 end
+
+xy = node_xys(:, nodes_to_plot);
+plotmd(hax, xy, 'yo')
+
 disp(key_catalog.')
 disp(golf_key_values.')
 
