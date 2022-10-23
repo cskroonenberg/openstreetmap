@@ -85,12 +85,12 @@ for i=1:size(way.id, 2)
         idx_n = find(nd_ids(1, :) == way_nd_ids(1, num_nd));
 
         node_id_txt = num2str(nd_ids(1, idx_1) );
-        curtxt = {['way=', num2str(way.id(i)) ], ['idx_1=', num2str(idx_1)], }.';
-        textmd(node_xys(:, idx_1), curtxt, 'Parent', hax)
+        %curtxt = {['way=', num2str(way.id(i)) ], ['idx_1=', num2str(idx_1)], ['id=', num2str(way_nd_ids(1, 1))]}.';
+        %textmd(node_xys(:, idx_1), curtxt, 'Parent', hax)
 
         node_id_txt = num2str(nd_ids(1, idx_n) );
-        curtxt = {['way=', num2str(way.id(i)) ], ['idx_n=', num2str(idx_n)], }.';
-        textmd(node_xys(:, idx_n), curtxt, 'Parent', hax)
+        %curtxt = {['way=', num2str(way.id(i)) ], ['idx_n=', num2str(idx_n)], ['id=', num2str(way_nd_ids(1, num_nd))]}.';
+        %textmd(node_xys(:, idx_n), curtxt, 'Parent', hax)
 
         nodes_to_plot = [nodes_to_plot, idx_1, idx_n];
 
@@ -98,16 +98,11 @@ for i=1:size(way.id, 2)
         for j=2:(num_nd-1)
             idx_j = find(nd_ids(1, :) == way_nd_ids(1, j));
             nodes_to_plot = [nodes_to_plot, idx_j];
-            if way.id(i) == 867486969
-                node_id_txt = num2str(nd_ids(1, idx_j) );
-                curtxt = {['way=', num2str(way.id(i)) ], ['idx_', num2str(j), '=', num2str(idx_j)], }.';
-                textmd(node_xys(:, idx_j), curtxt, 'Parent', hax)
-            end
         end
 
-        disp(['way ID = ', num2str(way.id(i))]);
-        disp(['add node ', num2str(way_nd_ids(1, 1)), 'idx: ',  num2str(idx_1), ' to plot']);
-        disp(['add node ', num2str(way_nd_ids(1, num_nd)), 'idx: ',  num2str(idx_n), ' to plot']);
+        %disp(['way ID = ', num2str(way.id(i))]);
+        %disp(['add node ', num2str(way_nd_ids(1, 1)), ' idx: ',  num2str(idx_1), ' to plot']);
+        %disp(['add node ', num2str(way_nd_ids(1, num_nd)), ' idx: ',  num2str(idx_n), ' to plot']);
     end
     for j=1:num_nd
         cur_nd_id = way_nd_ids(1, j);
@@ -148,7 +143,7 @@ for i=1:size(way.id, 2)
 end
 
 xy = node_xys(:, nodes_to_plot);
-plotmd(hax, xy, 'yo')
+%plotmd(hax, xy, 'yo')
 
 disp(key_catalog.')
 disp(golf_key_values.')
