@@ -1,12 +1,5 @@
-openstreetmap_filename = 'lcc.osm';
-
-[parsed_osm, osm_xml] = parse_openstreetmap(openstreetmap_filename);
-
-% Plot ways
-fig = figure;
-ax = axes('Parent', fig);
-hold(ax, 'on');
-plot_way(ax, parsed_osm);
+function [] = plot_significant_locations(ax, parsed_osm)
+%PLOT_SIGNIFICANT_LOCATIONS Highlight and annotate nodes designated as significant locations
 
 sig_loc_idxs = [];
 node = parsed_osm.node;
@@ -36,8 +29,7 @@ end
 % Plot significant locations
 xy = node.xy(:, sig_loc_idxs);
 plotmd(ax, xy, 'ro');
-
-hold(ax, 'off');
+end % plot_significant_locations
 
 function [nd_idx] = nd_id_2_idx(nd_id, nodes)
 %ND_ID_2_IDX Return a nodes index given its 
