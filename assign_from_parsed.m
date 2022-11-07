@@ -5,7 +5,7 @@ function [bounds, node, way, relation] = assign_from_parsed(parsed_osm)
 %
 % 2010.11.20 (c) Ioannis Filippidis, jfilippidis@gmail.com
 
-disp('Parsed OpenStreetMap given.')
+disp('Parsed OpenStreetMap given.');
 
 bounds = parsed_osm.bounds;
 node = parsed_osm.node;

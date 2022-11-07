@@ -1,11 +1,38 @@
-function [adjacency_list] = extract_adjacency_list(parsed_osm)
+function [adjacency_list, nodes, ways] = extract_adjacency_list(parsed_osm)
 %EXTRACT_ADJACENCY_LIST Parse OSM file to extract adjacency list containing node connections
 	%disp('extract_adjacency_list');
 
 	% TODO: Could futher parse to only handle relevant nodes
 	[~, nodes, ways, ~] = assign_from_parsed(parsed_osm);
 
-	n = size(nodes.id, 2);
+	% Add extra points within relevant ways
+
+	n = size(nodes.id, 2)
+	max_nd_id = max(nodes.id);
+	%% new_node(nd_id, pred_id, nd_1_id, portion_nd_1, nd_2_id, way_id, nodes, ways) %%
+	%% Start -> Hole 1
+	[nodes, ways] = new_node(max_nd_id+1, 7221695450, 7221695450, 0.75, 7221695447, 772145420, nodes, ways);
+	[nodes, ways] = new_node(max_nd_id+2, max_nd_id+1, 7221695450, 0.50, 7221695447, 772145420, nodes, ways);
+	[nodes, ways] = new_node(max_nd_id+3, max_nd_id+2, 7221695450, 0.25, 7221695447, 772145420, nodes, ways);
+
+	%% Hole 1 -> Hole 2, 3
+	[nodes, ways] = new_node(max_nd_id+4, 7319464063, 7319464063, 0.25, 7212354780, 773682303, nodes, ways);
+
+	[lat, ~] = avg_position(max_nd_id+4, 0.5, 7319464063, nodes);
+	[~, lon] = nd_xy(nd_id_2_idx(max_nd_id+4, nodes), nodes)
+	ways = insert_node_to_way(773682303, max_nd_id+5, 7319464063, ways);
+	nodes = insert_node_to_nodes(max_nd_id+5, lat, lon, nodes);
+
+	[nodes, ways] = new_node(max_nd_id+6, 7319464063, max_nd_id+5, 0.5, 7319464063, 773682303, nodes, ways);
+
+	%% Loop
+	[nodes, ways] = new_node(max_nd_id+7, 7259781130, 7259781130, 0.5, 8085848420, 777884654, nodes, ways);
+	[nodes, ways] = new_node(max_nd_id+8, max_nd_id+7, 7259781136, 0.5, 8085848420, 777884654, nodes, ways);
+	[nodes, ways] = new_node(max_nd_id+9, max_nd_id+8, 7259781136, 0.5, max_nd_id+8, 777884654, nodes, ways);
+	[nodes, ways] = new_node(max_nd_id+10, max_nd_id+7, max_nd_id+7, 0.5, max_nd_id+8, 777884654, nodes, ways);
+
+
+	n = size(nodes.id, 2)
 	adjacency_list = cell(1, n);
 
 	golf_ways = []; % Golf cart ways with nodes added in 1...n order
@@ -238,3 +265,46 @@ function [end_nd_id] = way_end_nd_id(way_id, ways)
 	num_nd = size(way_nd_ids, 2);
 	end_nd_id = way_nd_ids(num_nd);
 end % way_end_nd_id
+
+function [lat, lon] = avg_position(nd_1_id, portion_nd_1, nd_2_id, nodes)
+%AVG_POSITION Calculate the average lat, lon position between two points based on a certain proportion
+	nd_1_idx = nd_id_2_idx(nd_1_id, nodes);
+	nd_2_idx = nd_id_2_idx(nd_2_id, nodes);
+
+	lat = portion_nd_1*nodes.xy(1, nd_1_idx) + (1-portion_nd_1)*nodes.xy(1, nd_2_idx);
+	lon = portion_nd_1*nodes.xy(2, nd_1_idx) + (1-portion_nd_1)*nodes.xy(2, nd_2_idx);
+end % avg_position
+
+function [ways] = insert_node_to_way(way_id, nd_id, predecessor_nd_id, ways)
+%INSERT_NODE_TO_WAY Insert node into way after a given predecessor_nd
+	way_idx = way_id_2_idx(way_id, ways);
+
+	way_nd_ids = ways.nd(way_idx);
+	way_nd_ids = way_nd_ids{:};
+
+	pred_nd_idx = find(way_nd_ids == predecessor_nd_id);
+	disp(['Inserting node ', num2str(nd_id), ' after node ', num2str(predecessor_nd_id), ' in way ', num2str(way_id)]);
+	ways.nd(way_idx) = {splice_arr(way_nd_ids, nd_id, pred_nd_idx)};
+	way_nd_ids = ways.nd(way_idx);
+	way_nd_ids = way_nd_ids{:};
+	disp('Node inserted.');
+end % insert_node_to_way
+
+function [nodes] = insert_node_to_nodes(nd_id, nd_lat, nd_lon, nodes)
+%INSERT_NODE_TO_WAY Insert node into nodes with a given ID, lat, lon
+	nodes.id = [nodes.id, nd_id];
+	disp(['Added node ID ', num2str(nd_id), ' to nodes.id']);
+	nd_coord = [nd_lat, nd_lon];
+	nodes.xy = cat(2, nodes.xy, nd_coord.');
+	disp('Added node lat, lon to nodes.xy');
+end % insert_node_to_way
+
+function [nodes, ways] = new_node(nd_id, pred_id, nd_1_id, portion_nd_1, nd_2_id, way_id, nodes, ways)
+%NEW_NODE Creates new node based on proportional position and predecessor for way placement, inserts node to ways and nodes
+	lat = 0;
+	lon = 0;
+	[lat, lon] = avg_position(nd_1_id, portion_nd_1, nd_2_id, nodes);
+	disp(['Node ', num2str(nd_id), ' lat: ', num2str(lat), ' lon: ', num2str(lon)]);
+	ways = insert_node_to_way(way_id, nd_id, pred_id, ways);
+	nodes = insert_node_to_nodes(nd_id, lat, lon, nodes);
+end % new_node

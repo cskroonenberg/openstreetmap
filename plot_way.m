@@ -1,4 +1,4 @@
-function [] = plot_way(ax, parsed_osm, map_img_filename)
+function [] = plot_way(ax, bounds, node, way, map_img_filename)
 %PLOT_WAY   plot parsed OpenStreetMap file
 %
 % usage
@@ -19,11 +19,11 @@ function [] = plot_way(ax, parsed_osm, map_img_filename)
 % ToDo
 %   add double way roads
 
-if nargin < 3
-    map_img_filename = [];
-end
+%if nargin < 3
+map_img_filename = [];
+%end
 
-[bounds, node, way, ~] = assign_from_parsed(parsed_osm);
+%[bounds, node, way, ~] = assign_from_parsed(parsed_osm);
 
 disp_info(bounds, size(node.id, 2), size(way.id, 2))
 show_ways(ax, bounds, node, way, map_img_filename);
@@ -32,7 +32,7 @@ function [] = show_ways(hax, bounds, node, way, map_img_filename)
 show_map(hax, bounds, map_img_filename)
 
 node_xys = node.xy;
-
+nodes_to_plot = [];
 %plot(node.xy(1,:), node.xy(2,:), '.')
 key_catalog = {};
 golf_key_values = {};
@@ -79,6 +79,39 @@ for i=1:size(way.id, 2)
     % remove zeros
     nd_coor(any(nd_coor==0,2),:)=[];
     
+    if (strcmp(key, 'golf') && strcmp(val, 'cartpath')) || strcmp(key, 'bridge')
+        % Plot and label first and last nodes in a way
+        idx_1 = find(nd_ids(1, :) == way_nd_ids(1, 1));
+        idx_n = find(nd_ids(1, :) == way_nd_ids(1, num_nd));
+
+        id_1 = nd_ids(1, idx_1);
+        id_n = nd_ids(1, idx_n);
+
+        curtxt = {['way=', num2str(way.id(i)) ], ['id_1=', num2str(id_1)], }.';
+        textmd(node_xys(:, idx_1), curtxt, 'Parent', hax)
+
+        curtxt = {['way=', num2str(way.id(i)) ], ['id_n=', num2str(id_n)], }.';
+        textmd(node_xys(:, idx_n), curtxt, 'Parent', hax)
+
+        nodes_to_plot = [nodes_to_plot, idx_1, idx_n];
+
+        % Plot all other nodes (no label)
+        for j=2:(num_nd-1)
+            idx_j = find(nd_ids(1, :) == way_nd_ids(1, j));
+            nodes_to_plot = [nodes_to_plot, idx_j];
+            if way.id(i) == 867486969 %772145420% || way.id(i) == 772700736
+                id_j = nd_ids(1, idx_j);
+                %curtxt = {['way=', num2str(way.id(i)) ], ['id_', num2str(j), '=', num2str(id_j)], }.';
+                curtxt = {['id_', num2str(j), '=', num2str(id_j)]}.';
+                textmd(node_xys(:, idx_j), curtxt, 'Parent', hax)
+            end
+        end
+
+        % disp(['way ID = ', num2str(way.id(i))]);
+        % disp(['add node ', num2str(way_nd_ids(1, 1)), 'idx: ',  num2str(idx_1), ' to plot']);
+        % disp(['add node ', num2str(way_nd_ids(1, num_nd)), 'idx: ',  num2str(idx_n), ' to plot']);
+    end
+
     if ~isempty(nd_coor)
         % plot golf ways
         if flag == 1
@@ -106,6 +139,10 @@ for i=1:size(way.id, 2)
     
     %waitforbuttonpress
 end
+
+
+xy = node_xys(:, nodes_to_plot);
+plotmd(hax, xy, 'yo')
 
 disp(key_catalog.')
 disp(golf_key_values.')
