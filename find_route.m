@@ -20,9 +20,11 @@ function [route] = find_route(S, T, adjacency_list)
 			break;
 		end % if
 
-		for e=adjacency_list{u} % For all edges from u
-	        v = e{1}(1);		% v = connected node
-	        w = e{1}(2);		% w = edge weight
+		%for e=adjacency_list{u} 
+		e = adjacency_list{u};
+        for i=1:size(e) % For all edges from u
+	        v = e{i}(1);		% v = connected node
+	        w = e{i}(2);		% w = edge weight
 
 	        if dist(v) > dist(u) + w 	% If there is a short path to v from u
 	        	dist(v) = dist(u) + w;	% Update dist(v)
