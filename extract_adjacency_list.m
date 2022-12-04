@@ -84,11 +84,11 @@ function [adjacency_list, nodes, ways] = extract_adjacency_list(parsed_osm)
 	rev_golf_ways = [rev_golf_ways, 867486263]; % Loop 1
 
 	for w_id=golf_ways
-		adjacency_list = connect_way(w_id, parsed_osm, adjacency_list, false);
+		adjacency_list = connect_way(w_id, nodes, ways, adjacency_list, false);
 	end
 
 	for w_id=rev_golf_ways
-		adjacency_list = connect_way(w_id, parsed_osm, adjacency_list, true);
+		adjacency_list = connect_way(w_id, nodes, ways, adjacency_list, true);
 	end
 
 	% Connect Start to Hole 1
@@ -191,12 +191,8 @@ function [adjacency_list, nodes, ways] = extract_adjacency_list(parsed_osm)
 
 end % extract_adjacency_list
 
-function [adjacency_list] = connect_way(way_id, parsed_osm, adjacency_list, reverse)
+function [adjacency_list] = connect_way(way_id, nodes, ways, adjacency_list, reverse)
 %EXTRACT_ADJACENCY_LIST Add edges between a way's adjacent nodes to the adjacency list in 1...n order
-	%disp('connect_way');
-	ways = parsed_osm.way;
-	nodes = parsed_osm.node;
-
 	way_idx = way_id_2_idx(way_id, ways);
 	way_nd_ids = ways.nd(way_idx);
 	way_nd_ids = way_nd_ids{:};
@@ -313,20 +309,20 @@ function [ways] = insert_node_to_way(way_id, nd_id, predecessor_nd_id, ways)
 	way_nd_ids = way_nd_ids{:};
 
 	pred_nd_idx = find(way_nd_ids == predecessor_nd_id);
-	disp(['Inserting node ', num2str(nd_id), ' after node ', num2str(predecessor_nd_id), ' in way ', num2str(way_id)]);
+	%disp(['Inserting node ', num2str(nd_id), ' after node ', num2str(predecessor_nd_id), ' in way ', num2str(way_id)]);
 	ways.nd(way_idx) = {splice_arr(way_nd_ids, nd_id, pred_nd_idx)};
 	way_nd_ids = ways.nd(way_idx);
 	way_nd_ids = way_nd_ids{:};
-	disp('Node inserted.');
+	%disp('Node inserted.');
 end % insert_node_to_way
 
 function [nodes] = insert_node_to_nodes(nd_id, nd_lon, nd_lat, nodes)
 %INSERT_NODE_TO_WAY Insert node into nodes with a given ID, lat, lon
 	nodes.id = [nodes.id, nd_id];
-	disp(['Added node ID ', num2str(nd_id), ' to nodes.id']);
+	%disp(['Added node ID ', num2str(nd_id), ' to nodes.id']);
 	nd_coord = [nd_lon, nd_lat];
 	nodes.xy = cat(2, nodes.xy, nd_coord.');
-	disp('Added node lat, lon to nodes.xy');
+	%disp('Added node lat, lon to nodes.xy');
 end % insert_node_to_way
 
 function [nodes, ways] = new_node(nd_id, pred_id, nd_1_id, nd_2_id, lon_prop, lat_prop, way_id, nodes, ways)
@@ -334,7 +330,7 @@ function [nodes, ways] = new_node(nd_id, pred_id, nd_1_id, nd_2_id, lon_prop, la
 	lat = 0;
 	lon = 0;
 	[lat, lon] = avg_position(nd_1_id, nd_2_id, lon_prop, lat_prop, nodes);
-	disp(['Node ', num2str(nd_id), ' lat: ', num2str(lat), ' lon: ', num2str(lon)]);
+	%disp(['Node ', num2str(nd_id), ' lat: ', num2str(lat), ' lon: ', num2str(lon)]);
 	ways = insert_node_to_way(way_id, nd_id, pred_id, ways);
 	nodes = insert_node_to_nodes(nd_id, lat, lon, nodes);
 end % new_node

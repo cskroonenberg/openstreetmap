@@ -140,9 +140,8 @@ for i=1:size(way.id, 2)
     %waitforbuttonpress
 end
 
-
-xy = node_xys(:, nodes_to_plot);
-plotmd(hax, xy, 'yo')
+%xy = node_xys(:, nodes_to_plot);
+%plotmd(hax, xy, 'yo')
 
 disp(key_catalog.')
 disp(golf_key_values.')

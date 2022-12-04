@@ -1,4 +1,4 @@
-function [] = plot_route(ax, route, parsed_osm)
+function [] = plot_route(ax, route, nodes, ways)
 % plot (over map) the route found by route planner
 %
 % usage
@@ -21,7 +21,7 @@ if isempty(route)
     return
 end
 
-nodexy = parsed_osm.node.xy;
+nodexy = nodes.xy;
 start_xy = nodexy(:, route(1, 1) );
 path_xy = nodexy(:, route);
 path_end = nodexy(:, route(1, end) );

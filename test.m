@@ -19,15 +19,21 @@ end
 
 connected = connected_nds(7879, adjacency_list);
 
-%S = nd_id_2_idx(sig_loc(2, 'black'), nodes);
-%T = nd_id_2_idx(sig_loc(4, 'black'), nodes);
+S = nd_id_2_idx(sig_loc(2, 'black'), nodes);
+T = nd_id_2_idx(sig_loc(4, 'black'), nodes);
 
-%route = find_route(S, T, adjacency_list);
+route = find_route(S, T, adjacency_list);
+
+arr_2_json(route, 'test_route', 'test_route');
 
 if plot
-	% xy = nodes.xy(:, connected);
-	% plotmd(ax, xy, 'ro');
-	%plot_route(ax, route, parsed_osm);
+	connected_xy = nodes.xy(:, connected);
+	arr_2_json(flip(transpose(flip(connected_xy))), 'test_routeXY', 'test_routeXY_T');
+
+	%connected2_xy = nodes.xy(:, connected2);
+	%plotmd(ax, connected_xy, 'ro');
+	%plotmd(ax, connected2_xy, 'go');
+	plot_route(ax, route, nodes, ways);
 	hold(ax, 'off');
 end
 
