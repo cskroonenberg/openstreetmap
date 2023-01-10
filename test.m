@@ -2,7 +2,7 @@ openstreetmap_filename = 'lcc.osm';
 
 [parsed_osm, osm_xml] = parse_openstreetmap(openstreetmap_filename);
 
-[bounds, nodes, ways, ~] = assign_from_parsed(parsed_osm);
+[osm_bounds, nodes, ways, ~] = assign_from_parsed(parsed_osm);
 
 plot = true;
 
@@ -13,14 +13,17 @@ if plot
 	fig = figure;
 	ax = axes('Parent', fig);
 	hold(ax, 'on');
-	plot_way(ax, bounds, nodes, ways, '');
+	plot_way(ax, osm_bounds, nodes, ways, '');
     %plot_nodes(ax, parsed_osm)
 end
 
 connected = connected_nds(7879, adjacency_list);
 
-S = nd_id_2_idx(sig_loc(2, 'black'), nodes);
-T = nd_id_2_idx(sig_loc(4, 'black'), nodes);
+%S = nd_id_2_idx(sig_loc(1, 'black'), nodes);
+%T = nd_id_2_idx(sig_loc(2, 'black'), nodes);
+
+S = nd_id_2_idx(sig_loc(1, 'gold'), nodes);
+T = nd_id_2_idx(sig_loc(1, 'hole'), nodes);
 
 route = find_route(S, T, adjacency_list);
 
@@ -36,6 +39,21 @@ if plot
 	plot_route(ax, route, nodes, ways);
 	hold(ax, 'off');
 end
+
+route = nodes.xy(:, route);
+
+direction = route(2,:) - route(1,:);
+direction_rad = atan2(direction(2), direction(1));
+
+%obs_grid = zeros(round(maxY-minY), round(maxX-minX));
+obs_grid = zeros(50, 50);
+%obs_grid(25:26, 24:25) = 1;
+%obs_grid(23:24, 22:23) = 1;
+
+velocity_mps = 0;
+acceleration_mpsq = 0;
+
+optimal_path = path_planner(route, route(1,1), route(1,2), direction_rad, velocity_mps, acceleration_mpsq, obs_grid, true)
 
 function [nd_idx] = nd_id_2_idx(nd_id, nodes)
 %ND_ID_2_IDX Return a nodes index given its 
