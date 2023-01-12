@@ -18,7 +18,7 @@ plot = false
 disp('Init')
 toc
 i = 0;
-%while true
+while true
 	tic
 	[lon, lat] = read_GPS();
 	S = closest_node(lat, lon, node); % TODO
@@ -43,8 +43,8 @@ i = 0;
 	obs_grid = get_obstacles(); % TODO: Read obstacles identified by camera
 
 	% TODO: Read from IMU and GPS
-	[direction_rad, velocity_mps, acceleration_mpsq] = read_IMU();
-	[lon, lat] = read_GPS();
+	[heading_deg, lin_acc_x, lin_acc_y, lin_acc_z] = read_imu('imu.txt');
+	[lon, lat, velocity_x, velocity_y] = read_gps('gps.txt');
 
 	%TODO: Will need to determine best way to convert lon, lat to cartesian meters
 	optimal_path = path_planner(route, lon, lat, direction_rad, velocity_mps, acceleration_mpsq, obs_grid, plot);
@@ -52,4 +52,4 @@ i = 0;
 	% Give path to controller
 	% Send commands to actuators
 	disp([num2str(i), ') elapsed time:', num2str(toc)])
-%end % while
+end % while
