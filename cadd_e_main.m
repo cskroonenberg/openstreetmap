@@ -44,10 +44,13 @@ while true
 
 	% TODO: Read from IMU and GPS
 	[heading_deg, lin_acc_x, lin_acc_y, lin_acc_z] = read_imu('imu.txt');
-	[lon, lat, velocity_x, velocity_y] = read_gps('gps.txt');
+	[lon, lat, speed_mps = read_gps('gps.txt');
+
+	direction_rad = heading_deg*(pi/180);
+	% TODO: Convert directional acceleration to single acceleration value (meters / second^2)
 
 	%TODO: Will need to determine best way to convert lon, lat to cartesian meters
-	optimal_path = path_planner(route, lon, lat, direction_rad, velocity_mps, acceleration_mpsq, obs_grid, plot);
+	optimal_path = path_planner(route, lon, lat, direction_rad, speed_mps, acceleration_mpsq, obs_grid, plot);
 
 	% Give path to controller
 	% Send commands to actuators
